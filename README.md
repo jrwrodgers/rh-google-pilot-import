@@ -46,12 +46,14 @@ https://youtu.be/eYu2nZQnT6c
    * Name
    * Callsign
 
-3. The following columns are optional and the plugin will pull the values from this sheet if the fields are available in RotorHazard. Some fields are created by other plugins e.g. MultiGP ID =  https://github.com/i-am-grub/MultiGP_Toolkit
-   * Pilot color
-   * Pilot Phonetic
-   * Pilot Country
-   * Pilot MultiGP ID
-   * Pilot FPVScores UUID
+3. The following columns are optional and the plugin will pull the values from this sheet (NB the columns first row must contain exactly as below to be picked up) if the fields are available in RotorHazard. Some fields are created by other plugins e.g. MultiGP_Toolkit or VRxC_ELRS
+   * Color
+   * Phonetic
+   * Country
+   * MGP ID
+   * FPVS UUID
+   * ELRS Bind Phrase
+   * Velocidrone UUID
 
 3. Click on the **Share** button on the top right corner of the sheet and enter the service email address created in Section 1 of the Setup Guide above. Click done.
 4. Start up RotorHazard and head over the format page. Under hte panel **Google Pilot Import**, enter the name of the Google sheet created in step 1. e.g: ***Registration Form***

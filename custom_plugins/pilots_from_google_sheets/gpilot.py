@@ -4,6 +4,9 @@ import gspread
 import os
 from RHUI import UIField, UIFieldType
 
+DEBUG = False
+
+
 class Gpilot():
 
     CONST_CREDENTIALS = 'credentials.json'
@@ -77,6 +80,11 @@ class Gpilot():
             if "FPVS UUID" in record:
                 pilottracksideid = record["FPVS UUID"] if (record["FPVS UUID"] and record["FPVS UUID"] is not None) else ""
             if "Country" in record:
+                pilotcountry = record["Country"] if (record["Country"] and record["Country"] is not None) else " "
+            if "ELRS Bind Phrase" in record:
+                pilot_elrs = record["ELRS Bind Phrase"] if (record["ELRS Bind Phrase"] and record["ELRS Bind Phrase"] is not None) else " "
+            if "Velocidrone UUID" in record:
+                pilot_velo_uuid = record["Velocidrone UUID"] if (record["Velocidrone UUID"] and record["Velocidrone UUID"] is not None) else " "
                 pilotcountry = record["Country"] if (record["Country"] and record["Country"] is not None) else ""
             if "FAI Number" in record:
                 pilotfainumber = record["FAI Number"] if (record["FAI Number"] and record["FAI Number"] is not None) else ""
@@ -94,14 +102,25 @@ class Gpilot():
                 contains_mgp_id = False
                 contains_fpvs_uuid = False
                 contains_country = False
+                contains_elrs = False
+                contains_velo_uid = False
+                if DEBUG:
+                    self.logger.info(f"attribute are : ")
                 contains_fainumber = False
                 for i in range(len(self._rhapi.fields.pilot_attributes)):
+                    if DEBUG:
+                        self.logger.info(self._rhapi.fields.pilot_attributes[i].name)
                     if self._rhapi.fields.pilot_attributes[i].name == 'mgp_pilot_id':
                         contains_mgp_id = True
                     if self._rhapi.fields.pilot_attributes[i].name == 'fpvs_uuid':
                         contains_fpvs_uuid = True
                     if self._rhapi.fields.pilot_attributes[i].name == 'country':
                         contains_country = True
+                    if self._rhapi.fields.pilot_attributes[i].name == 'comm_elrs':
+                        contains_elrs = True
+                    if self._rhapi.fields.pilot_attributes[i].name == 'velo_uid':
+                        contains_velo_uid = True
+
                     if self._rhapi.fields.pilot_attributes[i].name == 'fainumber':
                         contains_fainumber = True
                 pilot_attributes = {}
@@ -111,6 +130,10 @@ class Gpilot():
                     pilot_attributes["fpvs_uuid"] = pilottracksideid
                 if contains_country and "Country" in record:
                     pilot_attributes["country"] = pilotcountry
+                if contains_elrs and "ELRS Bind Phrase" in record:
+                    pilot_attributes['comm_elrs'] = pilot_elrs
+                if contains_velo_uid and "Velocidrone UUID" in record:
+                    pilot_attributes["velo_uid"] = pilot_velo_uuid
                 if contains_fainumber and "FAI Number" in record:
                     pilot_attributes["fainumber"] = pilotfainumber
                 self._rhapi.db.pilot_alter(current_id, attributes=pilot_attributes)
