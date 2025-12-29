@@ -70,21 +70,24 @@ class Gpilot():
                 "callsign": pilotcallsign
             }
             if "Phonetic" in record:
-                pilotphonetic = record["Phonetic"] if (record["Phonetic"] and record["Phonetic"] is not None) else " "
+                pilotphonetic = record["Phonetic"] if (record["Phonetic"] and record["Phonetic"] is not None) else ""
                 pilot["phonetic"] = pilotphonetic
             if "Colour" in record:
                 pilotcolor = record["Colour"] if (record["Colour"] and record["Colour"] is not None) else "#ff0055"
                 pilot["color"] = pilotcolor
             if "MGP ID" in record:
-                pilotmgpid = record["MGP ID"] if (record["MGP ID"] and record["MGP ID"] is not None) else " "
+                pilotmgpid = record["MGP ID"] if (record["MGP ID"] and record["MGP ID"] is not None) else ""
             if "FPVS UUID" in record:
-                pilottracksideid = record["FPVS UUID"] if (record["FPVS UUID"] and record["FPVS UUID"] is not None) else " "
+                pilottracksideid = record["FPVS UUID"] if (record["FPVS UUID"] and record["FPVS UUID"] is not None) else ""
             if "Country" in record:
                 pilotcountry = record["Country"] if (record["Country"] and record["Country"] is not None) else " "
             if "ELRS Bind Phrase" in record:
                 pilot_elrs = record["ELRS Bind Phrase"] if (record["ELRS Bind Phrase"] and record["ELRS Bind Phrase"] is not None) else " "
             if "Velocidrone UUID" in record:
                 pilot_velo_uuid = record["Velocidrone UUID"] if (record["Velocidrone UUID"] and record["Velocidrone UUID"] is not None) else " "
+                pilotcountry = record["Country"] if (record["Country"] and record["Country"] is not None) else ""
+            if "FAI Number" in record:
+                pilotfainumber = record["FAI Number"] if (record["FAI Number"] and record["FAI Number"] is not None) else ""
 
             existingpilot = self.check_existing_pilot(pilot)
             if not existingpilot:
@@ -103,6 +106,7 @@ class Gpilot():
                 contains_velo_uid = False
                 if DEBUG:
                     self.logger.info(f"attribute are : ")
+                contains_fainumber = False
                 for i in range(len(self._rhapi.fields.pilot_attributes)):
                     if DEBUG:
                         self.logger.info(self._rhapi.fields.pilot_attributes[i].name)
@@ -117,6 +121,8 @@ class Gpilot():
                     if self._rhapi.fields.pilot_attributes[i].name == 'velo_uid':
                         contains_velo_uid = True
 
+                    if self._rhapi.fields.pilot_attributes[i].name == 'fainumber':
+                        contains_fainumber = True
                 pilot_attributes = {}
                 if contains_mgp_id and "MGP ID" in record:
                     pilot_attributes["mgp_pilot_id"] = pilotmgpid
@@ -128,6 +134,8 @@ class Gpilot():
                     pilot_attributes['comm_elrs'] = pilot_elrs
                 if contains_velo_uid and "Velocidrone UUID" in record:
                     pilot_attributes["velo_uid"] = pilot_velo_uuid
+                if contains_fainumber and "FAI Number" in record:
+                    pilot_attributes["fainumber"] = pilotfainumber
                 self._rhapi.db.pilot_alter(current_id, attributes=pilot_attributes)
         self._rhapi.ui.message_notify("Import complete, please refresh.")
         self._rhapi.ui.broadcast_pilots()
